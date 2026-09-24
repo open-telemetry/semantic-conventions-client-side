@@ -1,0 +1,131 @@
+name: Repo Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check Registry
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Read pinned weaver version
+        id: weaver
+        run: |
+          source versions.env
+          echo "version=$WEAVER_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install Weaver
+        uses: ./.github/actions/setup-weaver
+        with:
+          version: ${{ steps.weaver.outputs.version }}
+
+      - name: Validate registry (schema + shared policies)
+        run: make check-policies
+
+  docs-drift:
+    name: Check Docs Drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Read pinned weaver version
+        id: weaver
+        run: |
+          source versions.env
+          echo "version=$WEAVER_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install Weaver
+        uses: ./.github/actions/setup-weaver
+        with:
+          version: ${{ steps.weaver.outputs.version }}
+
+      - name: Regenerate docs
+        run: make generate-all
+
+      - name: Check committed docs are in sync
+        uses: ./.github/actions/assert-no-drift
+        with:
+          path: docs
+          label: docs
+          regenerate-hint: |
+            make install-weaver   # once, if weaver is not on PATH
+            make generate-all
+            git add docs/
+
+  templates:
+    name: Check Templates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Read pinned weaver version
+        id: weaver
+        run: |
+          source versions.env
+          echo "version=$WEAVER_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install Weaver
+        uses: ./.github/actions/setup-weaver
+        with:
+          version: ${{ steps.weaver.outputs.version }}
+
+      - name: Check doc templates against golden fixture output
+        run: make test-templates
+
+  policies:
+    name: Check Policies
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Read pinned OPA version
+        id: opa
+        run: |
+          source versions.env
+          echo "version=$OPA_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Install OPA
+        uses: ./.github/actions/setup-opa
+        with:
+          version: ${{ steps.opa.outputs.version }}
+
+      - name: Unit-test rego policies
+        run: make test-policies
+
+  required-status-check:
+    name: Run All Checks
+    if: always()
+    needs:
+      - check
+      - docs-drift
+      - templates
+      - policies
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fail if any dependency did not pass
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: exit 1

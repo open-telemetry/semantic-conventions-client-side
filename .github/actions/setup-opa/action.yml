@@ -1,0 +1,21 @@
+name: Setup OPA
+description: >
+  Installs the pinned Open Policy Agent CLI and puts it on PATH.
+
+inputs:
+  version:
+    description: OPA version to install, e.g. v1.20.2 (the leading "v" is optional).
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install opa
+      shell: bash
+      # Inputs are passed through `env`, never interpolated into the script body
+      env:
+        OPA_VERSION: ${{ inputs.version }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        install_dir="${HOME}/.local/bin"
+        bash "${ACTION_PATH}/install-opa.sh" "${install_dir}"

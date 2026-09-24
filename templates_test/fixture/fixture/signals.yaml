@@ -1,0 +1,43 @@
+file_format: definition/2
+
+# One of every signal collection, so a template that stops emitting a collection
+# shows up as a missing golden file.
+events:
+  - name: fixture.event
+    requirement_level: recommended
+    stability: development
+    brief: A fixture event.
+    attributes:
+      - ref: fixture.str
+        requirement_level: recommended
+
+metrics:
+  - name: fixture.metric
+    instrument: counter
+    unit: "1"
+    requirement_level: recommended
+    stability: development
+    brief: A fixture metric.
+    attributes:
+      - ref: fixture.str
+        requirement_level: recommended
+
+spans:
+  - type: fixture.span
+    kind: client
+    name:
+      note: Span name should be the fixture operation name.
+    requirement_level: recommended
+    stability: development
+    brief: A fixture span.
+    attributes:
+      - ref: fixture.str
+        requirement_level: recommended
+
+entities:
+  - type: fixture.entity
+    requirement_level: recommended
+    stability: development
+    brief: A fixture entity.
+    identity:
+      - ref: fixture.str

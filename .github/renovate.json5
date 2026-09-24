@@ -4,6 +4,35 @@
     "config:best-practices",
     "helpers:pinGitHubActionDigestsToSemver"
   ],
+  // The weaver, OPA and policy-pack versions live in versions.env, while the dependent
+  // semconv versions are pinned in model/manifest.yaml. The annotated comments (i.e. `# renovate:`)
+  // next to them are used by Renovate to do its thing. Keep a custom manager match string
+  // here for each annotated pin.
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^versions\\.env$/",
+        "/^model/manifest\\.yaml$/",
+        // The test fixture pins the same dependency, and the packageRule below keeps
+        // them in lockstep with model/manifest.yaml in a single PR.
+        "/^templates_test/fixture/manifest\\.yaml$/"
+      ],
+      "matchStrings": [
+        // versions.env: WEAVER_VERSION=vX.Y.Z
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s+WEAVER_VERSION=(?<currentValue>\\S+)",
+        // versions.env: OPA_VERSION=vX.Y.Z
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s+OPA_VERSION=(?<currentValue>\\S+)",
+        // versions.env: the policy-pack repo URL + commit SHA pair. git-refs tracks the branch named by `ref=` as currentValue and bumps the SHA as currentDigest
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s+ref=(?<currentValue>\\S+)\\s+POLICY_REPO_URL=(?<packageName>\\S+)\\s+POLICY_REPO_REF=(?<currentDigest>\\S+)",
+        // model/manifest.yaml: the dependency's declared schema_url version
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s+- schema_url: https://opentelemetry\\.io/schemas/(?<currentValue>\\d+\\.\\d+\\.\\d+)",
+        // model/manifest.yaml: the same dependency's pinned git tag
+        // the .git suffix on the clone URL is optional and we don't use it in the filter
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s+- schema_url: \\S+\\s+registry_path:.*?@(?<currentValue>v\\d+\\.\\d+\\.\\d+)\\[model\\]"
+      ]
+    }
+  ],
   "packageRules": [
     {
       "groupName": "all patch versions",
@@ -24,6 +53,18 @@
       "schedule": [
         "before 8am on Tuesday"
       ]
+    },
+    {
+      // The manifest's schema_url and its registry_path git tag name the same
+      // upstream release and MUST move together. Weaver does not fail when they
+      // disagree: it resolves to whatever registry_path actually fetches and at
+      // most warns, so the manifest can ask for one version and get another.
+      // `make check-policies` turns that into a hard error.
+      "description": "Bump the upstream manifest git tag and its adjacent schema_url together",
+      "matchDepNames": [
+        "open-telemetry/semantic-conventions"
+      ],
+      "groupName": "upstream semantic-conventions"
     }
   ],
   "labels": [
