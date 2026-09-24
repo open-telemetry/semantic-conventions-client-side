@@ -1,0 +1,96 @@
+# These docs cover only what this registry defines (i.e. `provenance.source` is
+# empty). Every filter keeps the entries that did not come from a dependency,
+# then buckets them by root namespace (i.e. the first `.`-separated segment of
+# the identifying field).
+#
+# Every collection the template context exposes is covered (i.e. attribute_groups,
+# attributes, entities, events, metrics and spans), so new conventions in a new
+# area that previously had no definitions are picked up automatically.
+templates:
+  - pattern: attributes.md.j2
+    filter: >
+      (.registry.attributes // [])
+      | map(select(.provenance.source | not))
+      | group_by(.key | split(".") | .[0])
+      | map({ root_namespace: (.[0].key | split(".") | .[0]),
+              attributes: (. | unique_by(.key)) })
+    application_mode: each
+    file_name: "attributes/{{ctx.root_namespace}}.md"
+
+  - pattern: events.md.j2
+    filter: >
+      (.registry.events // [])
+      | map(select(.provenance.source | not))
+      | group_by(.name | split(".") | .[0])
+      | map({ root_namespace: (.[0].name | split(".") | .[0]),
+              events: . })
+    application_mode: each
+    file_name: "events/{{ctx.root_namespace}}.md"
+
+  - pattern: metrics.md.j2
+    filter: >
+      (.registry.metrics // [])
+      | map(select(.provenance.source | not))
+      | group_by(.name | split(".") | .[0])
+      | map({ root_namespace: (.[0].name | split(".") | .[0]),
+              metrics: . })
+    application_mode: each
+    file_name: "metrics/{{ctx.root_namespace}}.md"
+
+  - pattern: spans.md.j2
+    filter: >
+      (.registry.spans // [])
+      | map(select(.provenance.source | not))
+      | group_by(.type | split(".") | .[0])
+      | map({ root_namespace: (.[0].type | split(".") | .[0]),
+              spans: . })
+    application_mode: each
+    file_name: "spans/{{ctx.root_namespace}}.md"
+
+  - pattern: entities.md.j2
+    filter: >
+      (.registry.entities // [])
+      | map(select(.provenance.source | not))
+      | group_by(.type | split(".") | .[0])
+      | map({ root_namespace: (.[0].type | split(".") | .[0]),
+              entities: . })
+    application_mode: each
+    file_name: "entities/{{ctx.root_namespace}}.md"
+
+  # Group ids are part of this registry's public API surface, so they get their own
+  # index rather than being bucketed by namespace (every id shares one root segment).
+  - pattern: attribute-groups.md.j2
+    filter: >
+      [{ attribute_groups: ((.registry.attribute_groups // [])
+          | map(select(.provenance.source | not))
+          | sort_by(.id)) }]
+      | map(select(.attribute_groups | length > 0))
+    application_mode: each
+    file_name: attribute-groups.md
+
+  - pattern: readme.md.j2
+    filter: >
+      { attribute_namespaces: ((.registry.attributes // [])
+          | map(select(.provenance.source | not))
+          | group_by(.key | split(".") | .[0])
+          | map({ name: (.[0].key | split(".") | .[0]), count: length })),
+        event_namespaces: ((.registry.events // [])
+          | map(select(.provenance.source | not))
+          | group_by(.name | split(".") | .[0])
+          | map({ name: (.[0].name | split(".") | .[0]), count: length })),
+        metric_namespaces: ((.registry.metrics // [])
+          | map(select(.provenance.source | not))
+          | group_by(.name | split(".") | .[0])
+          | map({ name: (.[0].name | split(".") | .[0]), count: length })),
+        span_namespaces: ((.registry.spans // [])
+          | map(select(.provenance.source | not))
+          | group_by(.type | split(".") | .[0])
+          | map({ name: (.[0].type | split(".") | .[0]), count: length })),
+        entity_namespaces: ((.registry.entities // [])
+          | map(select(.provenance.source | not))
+          | group_by(.type | split(".") | .[0])
+          | map({ name: (.[0].type | split(".") | .[0]), count: length })),
+        attribute_group_count: ((.registry.attribute_groups // [])
+          | map(select(.provenance.source | not)) | length) }
+    application_mode: single
+    file_name: README.md

@@ -1,0 +1,12 @@
+file_format: definition/2
+
+attribute_groups:
+  - id: registry.client_side.app
+    visibility: public
+    stability: development
+    brief: >
+      Public attributes in this registry in the `app` namespace.
+    attributes:
+      - ref: app.action.end_type
+      - ref: app.environment
+      - ref: app.nav.destination

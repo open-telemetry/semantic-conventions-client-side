@@ -1,0 +1,16 @@
+# Fixture registry for the docs template regression test. Never published.
+#
+# It exists to exercise the provenance filters in
+# templates/registry/markdown/weaver.yaml, which only do anything when a registry
+# imports groups from a dependency. The real model under model/ has no `imports`
+# block, so a broken filter is invisible there.
+
+# `schema_url` alone identifies this registry: everything before the last `/` (minus the scheme)
+# is its name, e.g. `opentelemetry.io/schemas/client-side-fixture-dev`, and the last segment is its version.
+schema_url: https://opentelemetry.io/schemas/client-side-fixture-dev/0.0.0-dev
+description: Fixture registry exercising every definition/2 collection.
+stability: development
+dependencies:
+  # renovate: datasource=github-tags depName=open-telemetry/semantic-conventions versioning=semver-coerced
+  - schema_url: https://opentelemetry.io/schemas/1.44.0
+    registry_path: https://github.com/open-telemetry/semantic-conventions@v1.44.0[model]

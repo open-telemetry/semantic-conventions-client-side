@@ -1,0 +1,45 @@
+file_format: definition/2
+
+attributes:
+  - key: app.action.end_type
+    type:
+      members:
+        - id: success
+          value: "success"
+          stability: development
+          brief: Action completed successfully
+        - id: error
+          value: "error"
+          stability: development
+          brief: Action ended due to an application error
+        - id: abandon
+          value: "abandon"
+          stability: development
+          brief: Action ended due to user abandonment
+        - id: unknown
+          value: "unknown"
+          stability: development
+          brief: Action ended without confirmation of success, error, or abandonment
+    stability: development
+    brief: >
+      Types of ending for an app action.
+    note: >
+      Events that model app actions can specify this attribute to determine if it was
+      successful or not. Any action event that omits this attribute is assumed to be
+      successfully completed.
+  - key: app.environment
+    type: string
+    stability: development
+    brief: >
+      The runtime environment in which the app is deployed.
+    examples: ["prod", "dev", "staging"]
+  - key: app.nav.destination
+    type: string
+    stability: development
+    brief: >
+      A human-readable string that uniquely identifies the destination of app navigation.
+    note: >
+      This value SHOULD NOT contain high-cardinality dimensions like user ID. If such
+      dimensions can be programmatically determined, they SHOULD be replaced with a
+      generic token (e.g. `{userId} Profile` rather than the actual user ID).
+    examples: [ "Home Page", "com.app.UserActivity", "{userId} Profile" ]

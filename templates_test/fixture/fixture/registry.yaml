@@ -1,0 +1,37 @@
+file_format: definition/2
+
+attribute_groups:
+  - id: registry.client_side.fixture
+    visibility: public
+    stability: development
+    brief: >
+      Fixture attribute group.
+    attributes:
+      - ref: fixture.str
+      - ref: fixture.enum
+      - ref_group: registry.client_side.fixture_internal
+  - id: registry.client_side.fixture_internal
+    visibility: internal
+    attributes:
+      - ref: fixture.internal_only
+
+attributes:
+  - key: fixture.str
+    type: string
+    stability: development
+    brief: A fixture string attribute.
+    examples: ["a"]
+  - key: fixture.internal_only
+    type: string
+    stability: development
+    brief: An attribute reaching the public group only through an internal group.
+    examples: ["x"]
+  - key: fixture.enum
+    type:
+      members:
+        - id: one
+          value: "one"
+          stability: development
+          brief: The only member.
+    stability: development
+    brief: A fixture enum attribute.

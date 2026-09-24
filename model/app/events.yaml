@@ -1,0 +1,18 @@
+file_format: definition/2
+events:
+  - name: app.nav_complete
+    requirement_level: recommended
+    stability: development
+    brief: >
+      Fired when an app navigation event has completed.
+    note: >
+      Navigation completion SHOULD be reported after the destination is loaded,
+      not when the navigation is merely triggered.
+    attributes:
+      - ref: app.nav.destination
+        requirement_level:
+          conditionally_required: When the navigation destination can be determined.
+      - ref: app.action.end_type
+        requirement_level: recommended
+      - ref: session.id
+        requirement_level: recommended
