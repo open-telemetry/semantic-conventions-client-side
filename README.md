@@ -14,6 +14,12 @@ version-stamped schema URLs representing the public-facing surface of the manife
 but it does not generate or publish language-specific binaries that make the hosted
 conventions consumable in instrumentation.
 
+## Scope
+
+This registry is the umbrella for all client-side semantic conventions, including ones
+that apply to only a single platform (browser, Android, iOS, desktop). Platform-specific
+conventions live here rather than alongside their SDK implementations.
+
 ## Structure
 
 Semantic conventions owned by this registry are defined in YAML files under `/model`.
