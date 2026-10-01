@@ -6,7 +6,7 @@ name: Release (dev)
 # The draft is the human gate: the workflow never invents a release, it only fills
 # one in and publishes it. The version is never passed in either -- it is read from
 # the schema_url in model/manifest.yaml, which is the single source of truth for
-# this registry's identity and version.
+# this registry's identity and version. It releases only from the default branch.
 
 on:
   workflow_dispatch:
@@ -28,6 +28,18 @@ jobs:
     permissions:
       contents: write  # to attach the artifacts to the draft, create the tag, and publish it
     steps:
+      # The tag is created at the commit the workflow runs on, so only the default branch may
+      # release.
+      - name: Refuse a branch other than the default branch
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [ "$REF_NAME" != "$DEFAULT_BRANCH" ]; then
+            echo "::error::Releases are made from '${DEFAULT_BRANCH}', but this run is on '${REF_NAME}'. Pick '${DEFAULT_BRANCH}' under 'Use workflow from'."
+            exit 1
+          fi
+
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
@@ -55,8 +67,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.tag.outputs.tag }}
         run: |
-          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
+          # Only a confirmed "Not Found" means the tag is new. Any other failure is not an
+          # answer, so the release stops rather than risk publishing over an existing tag.
+          if response=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" 2>&1); then
             echo "::error::Tag '${TAG}' already exists. Tags are immutable; bump the version segment of schema_url in model/manifest.yaml and merge that first."
+            exit 1
+          fi
+          if [[ "$response" != *"(HTTP 404)"* ]]; then
+            echo "::error::Could not check whether tag '${TAG}' exists:"
+            echo "$response"
             exit 1
           fi
           echo "Tag '${TAG}' is new."
@@ -66,8 +85,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.tag.outputs.tag }}
         run: |
-          info=$(gh release view "$TAG" --json isDraft 2>/dev/null || true)
-          if [ -z "$info" ]; then
+          # "release not found" means there is no draft. Any other failure is not enough
+          # proof that there is no such release, so we don't proceed.
+          if ! is_draft=$(gh release view "$TAG" --json isDraft --jq .isDraft 2>"${RUNNER_TEMP}/release-view.log"); then
+            if ! grep -qx "release not found" "${RUNNER_TEMP}/release-view.log"; then
+              echo "::error::Could not look up the release '${TAG}':"
+              cat "${RUNNER_TEMP}/release-view.log"
+              exit 1
+            fi
             existing_drafts=$(gh release list --limit 20 --json tagName,isDraft \
               --jq '[.[] | select(.isDraft) | .tagName] | join(", ")')
             echo "::error::Expected a draft release tagged '${TAG}', derived from the schema_url in model/manifest.yaml."
@@ -79,7 +104,6 @@ jobs:
             fi
             exit 1
           fi
-          is_draft=$(echo "$info" | jq -r .isDraft)
           if [ "$is_draft" != "true" ]; then
             echo "::error::Release '${TAG}' is already published; refusing to re-release."
             exit 1
@@ -92,8 +116,9 @@ jobs:
           source versions.env
           echo "version=$WEAVER_VERSION" >> "$GITHUB_OUTPUT"
 
+      # `$/` is GitHub's syntax for this repository's own actions, at the commit running.
       - name: Install Weaver
-        uses: ./.github/actions/setup-weaver
+        uses: $/.github/actions/setup-weaver
         with:
           version: ${{ steps.weaver.outputs.version }}
 

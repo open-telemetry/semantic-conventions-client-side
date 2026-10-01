@@ -5,8 +5,11 @@
 ## `{{ event.name }}`
 
 **Stability:** {{ event.stability }}
+{#- Leave out an event without a requirement level, which is still valid #}
+{%- if event.requirement_level %}
 
-**Requirement level:** {% if event.requirement_level is string %}{{ event.requirement_level }}{% elif event.requirement_level.conditionally_required %}conditionally required ({{ event.requirement_level.conditionally_required | trim | replace("\n", " ") }}){% elif event.requirement_level.recommended %}recommended ({{ event.requirement_level.recommended | trim | replace("\n", " ") }}){% else %}{{ event.requirement_level }}{% endif %}
+**Requirement level:** {{ event.requirement_level }}
+{%- endif %}
 
 {{ event.brief | trim }}
 {%- if event.note %}
