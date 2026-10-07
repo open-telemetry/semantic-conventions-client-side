@@ -1,0 +1,63 @@
+{#- Helpers the docs templates share, imported with `{% import "macros.j2" as m %}`. Each
+    renders one table cell's content on one line; the whitespace control (`{%-`, ` -%}`) keeps
+    the layout of this file out of the output. -#}
+
+{#- Text that may span lines, as one line. -#}
+{%- macro one_line(text) -%}
+  {{- text | trim | replace("\n", " ") -}}
+{%- endmacro -%}
+
+{#- An attribute's type: its name, or `enum` for one with members. Anything else is shown as
+    weaver gives it rather than mislabelled. -#}
+{%- macro type_name(type) -%}
+  {%- if type is string -%}
+    {{- type -}}
+  {%- elif type is mapping and type.members is defined -%}
+    enum
+  {%- else -%}
+    {{- type -}}
+  {%- endif -%}
+{%- endmacro -%}
+
+{#- A reference's requirement level: its name, or its name and condition. Anything else is shown
+    as weaver gives it. -#}
+{%- macro requirement(level) -%}
+  {%- if level is string -%}
+    {{- level | replace("_", "-") -}}
+  {%- elif level.conditionally_required -%}
+    conditionally required ({{ one_line(level.conditionally_required) }})
+  {%- elif level.recommended -%}
+    recommended ({{ one_line(level.recommended) }})
+  {%- elif level.opt_in -%}
+    opt-in ({{ one_line(level.opt_in) }})
+  {%- else -%}
+    {{- level -}}
+  {%- endif -%}
+{%- endmacro -%}
+
+{#- "**Deprecated**: <note> " ahead of a deprecated attribute's brief. -#}
+{%- macro deprecation(attribute) -%}
+  {%- if attribute.deprecated -%}
+    **Deprecated**
+    {%- if attribute.deprecated.note -%}
+      : {{ one_line(attribute.deprecated.note) }}
+    {%- endif -%}
+    {{- " " -}}
+  {%- endif -%}
+{%- endmacro -%}
+
+{#- An attribute's examples, each in backticks: a list, or a single value of the attribute's type
+    (a string, a number or a boolean). -#}
+{%- macro examples(values) -%}
+  {%- if values is defined and values is not none -%}
+    {%- if values is string -%}
+      `{{ values }}`
+    {%- elif values is sequence -%}
+      {%- for value in values -%}
+        `{{ value }}`{% if not loop.last %}, {% endif %}
+      {%- endfor -%}
+    {%- else -%}
+      `{{ values }}`
+    {%- endif -%}
+  {%- endif -%}
+{%- endmacro -%}
