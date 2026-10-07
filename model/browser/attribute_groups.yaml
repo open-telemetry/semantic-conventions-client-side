@@ -1,0 +1,42 @@
+file_format: definition/2
+
+attribute_groups:
+  - id: registry.client_side.browser
+    visibility: public
+    stability: development
+    brief: >
+      Public attributes in this registry in the `browser` namespace.
+    attributes:
+      - ref: browser.console.method
+      - ref: browser.navigation.same_document
+      - ref: browser.navigation.hash_change
+      - ref: browser.navigation.type
+      - ref: browser.navigation_timing.type
+      - ref: browser.navigation_timing.dom_interactive
+      - ref: browser.navigation_timing.dom_content_loaded_event_start
+      - ref: browser.navigation_timing.dom_content_loaded_event_end
+      - ref: browser.navigation_timing.dom_complete
+      - ref: browser.navigation_timing.load_event_start
+      - ref: browser.navigation_timing.load_event_end
+      - ref: browser.navigation_timing.unload_event_start
+      - ref: browser.navigation_timing.unload_event_end
+      - ref: browser.navigation_timing.redirect_count
+      - ref: browser.resource_timing.initiator_type
+      - ref: browser.resource_timing.duration
+      - ref: browser.resource_timing.worker_start
+      - ref: browser.resource_timing.redirect_start
+      - ref: browser.resource_timing.redirect_end
+      - ref: browser.resource_timing.fetch_start
+      - ref: browser.resource_timing.domain_lookup_start
+      - ref: browser.resource_timing.domain_lookup_end
+      - ref: browser.resource_timing.connect_start
+      - ref: browser.resource_timing.connect_end
+      - ref: browser.resource_timing.secure_connection_start
+      - ref: browser.resource_timing.request_start
+      - ref: browser.resource_timing.response_start
+      - ref: browser.resource_timing.response_end
+      - ref: browser.resource_timing.transfer_size
+      - ref: browser.resource_timing.encoded_body_size
+      - ref: browser.resource_timing.decoded_body_size
+      - ref: browser.resource_timing.next_hop_protocol
+      - ref: browser.resource_timing.render_blocking_status
