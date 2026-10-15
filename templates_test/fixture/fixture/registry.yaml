@@ -20,6 +20,9 @@ attributes:
     type: string
     stability: development
     brief: A fixture string attribute.
+    note: |
+      > [!Warning]
+      > This field contains sensitive (PII) information.
     examples: ["a"]
   - key: fixture.internal_only
     type: string
