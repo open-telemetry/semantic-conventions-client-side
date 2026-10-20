@@ -16,3 +16,10 @@
 | Value | Stability | Description |
 |---|---|---|
 | `one` | development | The only member. |
+
+## Notes
+
+### `fixture.str`
+
+> [!Warning]
+> This field contains sensitive (PII) information.

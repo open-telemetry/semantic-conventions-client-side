@@ -1,0 +1,24 @@
+file_format: definition/2
+
+attributes:
+  - key: enduser.id
+    type: string
+    stability: development
+    brief: "Unique identifier of an end user in the system. It may be a username, email address, or other identifier."
+    note: |
+      Unique identifier of an end user in the system.
+
+      > [!Warning]
+      > This field contains sensitive (PII) information.
+    examples: ['username']
+  - key: enduser.pseudo.id
+    type: string
+    stability: development
+    brief: >
+      Pseudonymous identifier of an end user. This identifier should be a random value that is not directly linked or associated with the end user's actual identity.
+    note: |
+      Pseudonymous identifier of an end user.
+
+      > [!Warning]
+      > This field contains sensitive (linkable PII) information.
+    examples: ['QdH5CAWJgqVT4rOr0qtumf']

@@ -9,6 +9,7 @@ in registries it depends on are documented in those respective repos.
 ## Attributes
 
 - [`browser`](attributes/browser.md) — 33 attributes
+- [`enduser`](attributes/enduser.md) — 2 attributes
 
 ## Events
 
