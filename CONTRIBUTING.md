@@ -3,10 +3,7 @@
 ## Changelog
 
 [`CHANGELOG.md`](CHANGELOG.md) is generated at release time by
-[Towncrier](https://towncrier.readthedocs.io/), the same tool the
-[GenAI](https://github.com/open-telemetry/semantic-conventions-genai) and
-[mainframe](https://github.com/open-telemetry/semantic-conventions-mainframe) registries use.
-Don't edit it directly. Instead, add a fragment under [`changelog.d/`](changelog.d/) to every
+[Towncrier](https://towncrier.readthedocs.io/). Don't edit it directly. Instead, add a fragment under [`changelog.d/`](changelog.d/) to every
 pull request that changes something consumers of this registry should notice, which is usually
 anything under `model/`.
 
