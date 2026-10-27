@@ -16,13 +16,20 @@ artifacts.
 
 ## How to release
 
-1. Bump the version segment of `schema_url` in `model/manifest.yaml`
-   - e.g. `1.1.0-dev` → `1.2.0-dev`.
+1. Open a release-prep pull request (titled `[chore] Prepare release v<version>`) that:
+   - Bumps the version segment of `schema_url` in `model/manifest.yaml`,
+     e.g. `1.1.0-dev` → `1.2.0-dev`.
+   - Renders the pending `changelog.d/` fragments into a new `CHANGELOG.md` section and
+     deletes them, by running `make changelog-build` after the bump. It reads the version
+     from `model/manifest.yaml`.
+
+   Get it reviewed and merged to `main`. If more fragments are merged while it is open,
+   rerun `make changelog-build` on it before merging.
 2. Prepare a [draft release](https://github.com/open-telemetry/semantic-conventions-client-side/releases/new):
    - Tag: `v<version>` matching the bumped `schema_url` (e.g. `v1.2.0-dev`),
      choosing `Create new tag on publish`.
-   - Description: what changed in `model/` since the last release. The
-     `Generate release notes` button fills in the merged PRs as a starting point.
+   - Title: the same as the tag.
+   - Description: the version's section from `CHANGELOG.md`, without its heading.
    - Save the release as draft. Do not publish!
 3. Run the [`Release (dev)` workflow](https://github.com/open-telemetry/semantic-conventions-client-side/actions/workflows/release-dev.yml)
    from the Actions tab (`workflow_dispatch`). It will:
@@ -32,7 +39,9 @@ artifacts.
    - Validate the registry (i.e. running `make check-policies`), including the shared policy pack.
    - Package the publication artifacts (i.e. running `make package`).
    - Attach `manifest.yaml` and `resolved.yaml` to the draft and publish it as a
-     prerelease, creating the `v<version>` tag at the workflow's commit.
+     prerelease, creating the `v<version>` tag at the workflow's commit. The workflow runs
+     at the tip of `main`, so run it once the release-prep PR has merged and before any
+     other PR merges, so the tagged `CHANGELOG.md` matches the release.
 
 To be clear: the workflow never creates a release of its own end to end. It
 only edits, adds to, and publishes the draft a human created in step #2. The

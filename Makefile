@@ -9,8 +9,16 @@ include versions.env
 # Manifests whose dependencies check-policies verifies for schema_url/registry_path agreement.
 MANIFESTS := model/manifest.yaml templates_test/fixture/manifest.yaml
 
+# towncrier is pinned in changelog.d/uv.lock and run through uv.
+TOWNCRIER := PYTHONUTF8=1 uv run --project changelog.d --locked towncrier
+TOWNCRIER_CONFIG := changelog.d/towncrier.toml
+
+# Branch that changelog-check compares against.
+CHANGELOG_BASE ?= origin/main
+
 .PHONY: all check-policies generate-docs generate-all package test test-templates test-policies \
-	update-golden install-weaver install-opa check-weaver check-opa clean help
+	update-golden changelog-check changelog-preview changelog-build install-weaver \
+	install-opa check-weaver check-opa check-uv clean help
 
 # Default: validate, then regenerate everything this repo owns.
 all: check-policies generate-all
@@ -121,6 +129,25 @@ update-golden: check-weaver
 test-policies: check-opa
 	opa test --explain fails policies policies_test
 
+# Fail unless this branch adds a changelog fragment under changelog.d/ relative to CHANGELOG_BASE.
+# CI runs this on pull requests that are not exempt. See changelog.d/README.md.
+changelog-check: check-uv
+	$(TOWNCRIER) check --config $(TOWNCRIER_CONFIG) --compare-with $(CHANGELOG_BASE)
+
+# Print the CHANGELOG.md section the pending fragments would render to, without changing anything.
+changelog-preview: check-uv
+	@set -eu; \
+	version="$$(awk '/^schema_url:/ { n = split($$2, parts, "/"); print parts[n]; exit }' model/manifest.yaml)"; \
+	$(TOWNCRIER) build --config $(TOWNCRIER_CONFIG) --draft --version "v$$version"
+
+# Render the pending fragments into CHANGELOG.md as the next release's section and delete them. Run
+# in the release-prep PR (see RELEASING.md). The version is the last segment of the schema_url in
+# model/manifest.yaml, so bump that first.
+changelog-build: check-uv
+	@set -eu; \
+	version="$$(awk '/^schema_url:/ { n = split($$2, parts, "/"); print parts[n]; exit }' model/manifest.yaml)"; \
+	$(TOWNCRIER) build --config $(TOWNCRIER_CONFIG) --yes --version "v$$version"
+
 # Install the weaver version pinned in versions.env into ~/.local/bin.
 install-weaver:
 	.github/actions/setup-weaver/install-weaver.sh
@@ -152,6 +179,13 @@ check-opa:
 	  echo "warning: opa $$installed installed, but this repo pins $(OPA_VERSION:v%=%) (see versions.env)." >&2; \
 	fi
 
+# Fail if uv is not on PATH. It installs the towncrier version locked in changelog.d/uv.lock.
+check-uv:
+	@command -v uv >/dev/null 2>&1 || { \
+	  echo "error: uv not found on PATH. Install it from https://docs.astral.sh/uv/ to run towncrier." >&2; \
+	  exit 1; \
+	}
+
 # Remove build output only. docs/ is generated but committed, so it is left alone
 clean:
 	rm -rf .build
@@ -165,6 +199,9 @@ help:
 	@echo "test-templates  check the doc templates against the golden fixture output"
 	@echo "test-policies   unit-test the local rego policies"
 	@echo "update-golden   refresh the golden files after an intended template change"
+	@echo "changelog-check    check that this branch adds a changelog fragment"
+	@echo "changelog-preview  print the changelog section the pending fragments render to"
+	@echo "changelog-build    render the pending fragments into CHANGELOG.md (release prep)"
 	@echo "install-weaver  install the weaver version pinned in versions.env"
 	@echo "install-opa     install the OPA version pinned in versions.env"
 	@echo "clean           remove build output"
