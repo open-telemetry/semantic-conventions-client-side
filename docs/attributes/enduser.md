@@ -15,11 +15,11 @@
 Unique identifier of an end user in the system.
 
 > [!Warning]
-> This field contains sensitive (PII) information.
+> This field may contain sensitive (PII) information.
 
 ### `enduser.pseudo.id`
 
 Pseudonymous identifier of an end user.
 
 > [!Warning]
-> This field contains sensitive (linkable PII) information.
+> This field may contain sensitive (linkable PII) information.

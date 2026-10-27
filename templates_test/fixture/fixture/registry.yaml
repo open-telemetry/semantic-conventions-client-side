@@ -22,7 +22,7 @@ attributes:
     brief: A fixture string attribute.
     note: |
       > [!Warning]
-      > This field contains sensitive (PII) information.
+      > This field may contain sensitive (PII) information.
     examples: ["a"]
   - key: fixture.internal_only
     type: string
