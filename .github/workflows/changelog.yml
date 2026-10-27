@@ -1,16 +1,17 @@
 name: Changelog
 
-# Requires a .chloggen/*.yaml entry on every pull request that consumers should notice, and
+# Requires a changelog.d/ fragment on every pull request that consumers should notice, and
 # rejects direct edits to CHANGELOG.md. Pull requests with "[chore]" in the title or the
 # "Skip Changelog" or "dependencies" label are exempt, and Renovate's are skipped entirely.
-# See CONTRIBUTING.md.
+# See changelog.d/README.md.
 
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened, labeled, unlabeled]
     branches: [main]
 
-permissions: {}
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
@@ -18,7 +19,30 @@ concurrency:
 
 jobs:
   changelog:
-    permissions:
-      contents: read  # for actions/checkout
-      pull-requests: read  # for dorny/paths-filter to list changed files
-    uses: open-telemetry/shared-workflows/.github/workflows/chloggen.yml@efc55838c9769c5476e0a5cf7183a8c5b4ae70a5 # v0.24.0
+    name: Check Changelog Fragment
+    if: >-
+      github.actor != 'renovate[bot]' &&
+      !contains(github.event.pull_request.labels.*.name, 'dependencies') &&
+      !contains(github.event.pull_request.labels.*.name, 'Skip Changelog') &&
+      !contains(github.event.pull_request.title, '[chore]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BASE_REF: ${{ github.event.pull_request.base.ref }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0  # towncrier check compares against the base branch
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+
+      - name: Ensure CHANGELOG.md is not edited directly
+        run: |
+          if git diff --name-only "origin/${BASE_REF}...HEAD" -- CHANGELOG.md | grep -q .; then
+            echo "::error::CHANGELOG.md is generated at release time. Add a fragment under changelog.d/ instead (see changelog.d/README.md), or put \"[chore]\" in the title if no entry is needed."
+            exit 1
+          fi
+
+      - name: Ensure a changelog fragment was added
+        run: make changelog-check CHANGELOG_BASE="origin/${BASE_REF}"

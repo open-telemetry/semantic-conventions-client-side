@@ -19,12 +19,12 @@ artifacts.
 1. Open a release-prep pull request (titled `[chore] Prepare release v<version>`) that:
    - Bumps the version segment of `schema_url` in `model/manifest.yaml`,
      e.g. `1.1.0-dev` → `1.2.0-dev`.
-   - Renders the pending `.chloggen/` entries into a new `CHANGELOG.md` section and
-     deletes them, by running `make chlog-update` after the bump. It reads the version
+   - Renders the pending `changelog.d/` fragments into a new `CHANGELOG.md` section and
+     deletes them, by running `make changelog-build` after the bump. It reads the version
      from `model/manifest.yaml`.
 
-   Get it reviewed and merged to `main`. If more entries are merged while it is open,
-   rerun `make chlog-update` on it before merging.
+   Get it reviewed and merged to `main`. If more fragments are merged while it is open,
+   rerun `make changelog-build` on it before merging.
 2. Prepare a [draft release](https://github.com/open-telemetry/semantic-conventions-client-side/releases/new):
    - Tag: `v<version>` matching the bumped `schema_url` (e.g. `v1.2.0-dev`),
      choosing `Create new tag on publish`.

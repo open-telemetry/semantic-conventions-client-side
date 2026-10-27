@@ -1,9 +1,0 @@
-# Link-check config for the rendered changelog preview (see .github/workflows/changelog.yml).
-
-# GitHub rate-limits unauthenticated link checks.
-accept = ["200..=299", "429"]
-
-exclude = [
-  "^https?://localhost",
-  "^https?://example\\.com",
-]

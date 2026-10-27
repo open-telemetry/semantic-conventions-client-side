@@ -23,8 +23,6 @@
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s+WEAVER_VERSION=(?<currentValue>\\S+)",
         // versions.env: OPA_VERSION=vX.Y.Z
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s+OPA_VERSION=(?<currentValue>\\S+)",
-        // versions.env: CHLOGGEN_VERSION=vX.Y.Z
-        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s+CHLOGGEN_VERSION=(?<currentValue>\\S+)",
         // versions.env: the policy-pack repo URL + commit SHA pair. git-refs tracks the branch named by `ref=` as currentValue and bumps the SHA as currentDigest
         "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+) versioning=(?<versioning>\\S+)\\s+ref=(?<currentValue>\\S+)\\s+POLICY_REPO_URL=(?<packageName>\\S+)\\s+POLICY_REPO_REF=(?<currentDigest>\\S+)",
         // model/manifest.yaml: the dependency's declared schema_url version
