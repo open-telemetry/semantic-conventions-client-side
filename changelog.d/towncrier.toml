@@ -5,6 +5,8 @@ start_string = "<!-- towncrier release notes start -->\n"
 title_format = "## {version}"
 issue_format = "[#{issue}](https://github.com/open-telemetry/semantic-conventions-client-side/pull/{issue})"
 wrap = true
+# Files in changelog.d/ that are not fragments.
+ignore = ["README.md", "pyproject.toml", "towncrier.toml", "uv.lock", ".venv"]
 
 [[tool.towncrier.type]]
 directory = "breaking"
