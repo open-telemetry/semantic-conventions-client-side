@@ -13,3 +13,7 @@ A fixture event.
 | Attribute | Type | Requirement level | Description |
 |---|---|---|---|
 | `fixture.str` | `string` | recommended | A fixture string attribute. |
+
+### `fixture.str`
+
+The value SHOULD identify the application build when symbols are obfuscated.
