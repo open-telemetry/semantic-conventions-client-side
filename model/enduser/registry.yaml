@@ -9,7 +9,7 @@ attributes:
       Unique identifier of an end user in the system.
 
       > [!Warning]
-      > This field contains sensitive (PII) information.
+      > This field may contain sensitive (PII) information.
     examples: ['username']
   - key: enduser.pseudo.id
     type: string
@@ -20,5 +20,5 @@ attributes:
       Pseudonymous identifier of an end user.
 
       > [!Warning]
-      > This field contains sensitive (linkable PII) information.
+      > This field may contain sensitive (linkable PII) information.
     examples: ['QdH5CAWJgqVT4rOr0qtumf']

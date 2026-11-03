@@ -22,4 +22,4 @@
 ### `fixture.str`
 
 > [!Warning]
-> This field contains sensitive (PII) information.
+> This field may contain sensitive (PII) information.
