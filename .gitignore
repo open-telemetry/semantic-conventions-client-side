@@ -10,3 +10,6 @@
 # macOS
 .DS_Store
 Thumbs.db
+
+# towncrier virtualenv created by uv
+/changelog.d/.venv/
