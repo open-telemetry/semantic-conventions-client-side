@@ -13,3 +13,9 @@ Identifying attributes:
 | Attribute | Type | Description |
 |---|---|---|
 | `fixture.str` | `string` | A fixture string attribute. |
+
+Descriptive attributes:
+
+| Attribute | Type | Description |
+|---|---|---|
+| `fixture.enum` | `enum` | A fixture enum attribute. |

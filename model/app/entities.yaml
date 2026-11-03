@@ -1,0 +1,11 @@
+file_format: definition/2
+
+entities:
+  - type: app
+    stability: development
+    brief: >
+      An app used directly by end users — like mobile, web, or desktop.
+    identity:
+      - ref: app.build_id
+    description:
+      - ref: app.installation.id

@@ -8,7 +8,10 @@ attribute_groups:
       Fixture attribute group.
     attributes:
       - ref: fixture.str
+        requirement_level: opt_in
       - ref: fixture.enum
+        requirement_level:
+          conditionally_required: When an enum value is available.
       - ref_group: registry.client_side.fixture_internal
   - id: registry.client_side.fixture_internal
     visibility: internal
