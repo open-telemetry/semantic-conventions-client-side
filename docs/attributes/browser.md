@@ -36,7 +36,7 @@
 | `browser.resource_timing.response_start` | `double` | development | Time, in milliseconds relative to the time origin of the document, immediately after the browser receives the first byte of the response. | `38.1` |
 | `browser.resource_timing.secure_connection_start` | `double` | development | Time, in milliseconds relative to the time origin of the document, immediately before the browser starts the handshake process to secure the connection. | `6.0` |
 | `browser.resource_timing.transfer_size` | `int` | development | The transfer size of the resource, in bytes, as reported by the browser. | `4096` |
-| `browser.resource_timing.worker_start` | `double` | development | Time, in milliseconds relative to the time origin of the document, immediately before the request is dispatched to a service worker. | `0.0`, `12.1` |
+| `browser.resource_timing.worker_start` | `double` | development | Time, in milliseconds relative to the time origin of the document, immediately before starting the service worker, or dispatching the fetch event if it is already running. | `0.0`, `12.1` |
 
 
 ## `browser.console.method` values
@@ -121,4 +121,4 @@ The browser uses a fixed 300-byte allowance for response headers, added to the e
 
 ### `browser.resource_timing.worker_start`
 
-Zero if the request is not intercepted by a service worker.
+Corresponds to [`PerformanceResourceTiming.workerStart`](https://www.w3.org/TR/resource-timing/#dom-performanceresourcetiming-workerstart). This timestamp includes service worker startup time when the worker is not already running. Zero if the request is not intercepted by a service worker, or if the timing-allow checks fail.

@@ -207,9 +207,12 @@ attributes:
     stability: development
     brief: >
       Time, in milliseconds relative to the time origin of the document, immediately before
-      the request is dispatched to a service worker.
+      starting the service worker, or dispatching the fetch event if it is already running.
     note: >
-      Zero if the request is not intercepted by a service worker.
+      Corresponds to
+      [`PerformanceResourceTiming.workerStart`](https://www.w3.org/TR/resource-timing/#dom-performanceresourcetiming-workerstart).
+      This timestamp includes service worker startup time when the worker is not already running.
+      Zero if the request is not intercepted by a service worker, or if the timing-allow checks fail.
     examples: [0.0, 12.1]
 
   - key: browser.resource_timing.redirect_start
