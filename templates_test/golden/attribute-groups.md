@@ -11,8 +11,8 @@ reference them by id, so renaming one is a breaking change.
 
 Fixture attribute group.
 
-| Attribute | Type | Description |
-|---|---|---|
-| `fixture.enum` | `enum` | A fixture enum attribute. |
-| `fixture.internal_only` | `string` | An attribute reaching the public group only through an internal group. |
-| `fixture.str` | `string` | A fixture string attribute. |
+| Attribute | Type | Requirement level | Description |
+|---|---|---|---|
+| `fixture.enum` | `enum` | conditionally required (When an enum value is available.) | A fixture enum attribute. |
+| `fixture.internal_only` | `string` | recommended | An attribute reaching the public group only through an internal group. |
+| `fixture.str` | `string` | opt_in | A fixture string attribute. |
