@@ -100,5 +100,5 @@ The event timestamp MUST be set to the start of the resource load, using the ent
 | `browser.resource_timing.response_start` | `double` | required | Time, in milliseconds relative to the time origin of the document, immediately after the browser receives the first byte of the response. |
 | `browser.resource_timing.secure_connection_start` | `double` | required | Time, in milliseconds relative to the time origin of the document, immediately before the browser starts the handshake process to secure the connection. |
 | `browser.resource_timing.transfer_size` | `int` | required | The transfer size of the resource, in bytes, as reported by the browser. |
-| `browser.resource_timing.worker_start` | `double` | required | Time, in milliseconds relative to the time origin of the document, immediately before the request is dispatched to a service worker. |
+| `browser.resource_timing.worker_start` | `double` | required | Time, in milliseconds relative to the time origin of the document, immediately before starting the service worker, or dispatching the fetch event if it is already running. |
 | `url.full` | `string` | required | The URL of the resource. |
