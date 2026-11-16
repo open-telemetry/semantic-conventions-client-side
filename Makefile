@@ -150,7 +150,7 @@ changelog-build: check-uv
 
 # Install the weaver version pinned in versions.env into ~/.local/bin.
 install-weaver:
-	.github/actions/setup-weaver/install-weaver.sh
+	scripts/install-weaver.sh
 
 # Install the OPA version pinned in versions.env into ~/.local/bin.
 install-opa:
