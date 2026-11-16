@@ -144,7 +144,7 @@ changelog-build: check-uv
 
 # Install the weaver version pinned in versions.env into ~/.local/bin.
 install-weaver:
-	.github/actions/setup-weaver/install-weaver.sh
+	scripts/install-weaver.sh
 
 # Fail if weaver is not on PATH; warn if it is not the version pinned in versions.env.
 check-weaver:
