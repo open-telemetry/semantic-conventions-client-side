@@ -3,7 +3,7 @@
 
 SHELL := /usr/bin/env bash
 
-# Weaver and OPA versions, and the shared policy pack, are pinned in versions.env
+# The weaver version and the shared policy pack are pinned in versions.env
 include versions.env
 
 # Manifests whose dependencies check-policies verifies for schema_url/registry_path agreement.
@@ -16,9 +16,9 @@ TOWNCRIER_CONFIG := changelog.d/towncrier.toml
 # Branch that changelog-check compares against.
 CHANGELOG_BASE ?= origin/main
 
-.PHONY: all check-policies generate-docs generate-all package test test-templates test-policies \
+.PHONY: all check-policies generate-docs generate-all package test test-templates \
 	update-golden changelog-check changelog-preview changelog-build install-weaver \
-	install-opa check-weaver check-opa check-uv clean help
+	check-weaver check-uv clean help
 
 # Default: validate, then regenerate everything this repo owns.
 all: check-policies generate-all
@@ -86,7 +86,7 @@ package: check-weaver
 	echo "packaged version $$version -> .build/package"
 
 # Every test suite this repo owns. Used locally only, as CI runs these as separate jobs.
-test: test-templates test-policies
+test: test-templates
 
 # Regression test for the doc templates. Compare the docs generated from the fixture with the
 # expected golden files, so any change in template output (including imported definitions leaking
@@ -123,12 +123,6 @@ update-golden: check-weaver
 	rm -rf templates_test/golden
 	weaver registry generate -r templates_test/fixture --v2 --templates templates markdown templates_test/golden
 
-# Unit-test the local rego policies under policies/ against policies_test/. Pure OPA: no weaver,
-# no network. The cases worth covering involve definitions inherited from a dependency, which the
-# real model never produces because it declares no `imports` block.
-test-policies: check-opa
-	opa test --explain fails policies policies_test
-
 # Fail unless this branch adds a changelog fragment under changelog.d/ relative to CHANGELOG_BASE.
 # CI runs this on pull requests that are not exempt. See changelog.d/README.md.
 changelog-check: check-uv
@@ -152,10 +146,6 @@ changelog-build: check-uv
 install-weaver:
 	.github/actions/setup-weaver/install-weaver.sh
 
-# Install the OPA version pinned in versions.env into ~/.local/bin.
-install-opa:
-	.github/actions/setup-opa/install-opa.sh
-
 # Fail if weaver is not on PATH; warn if it is not the version pinned in versions.env.
 check-weaver:
 	@command -v weaver >/dev/null 2>&1 || { \
@@ -166,17 +156,6 @@ check-weaver:
 	@installed="$$(weaver --version | awk '{print $$2}')"; \
 	if [[ "$$installed" != "$(WEAVER_VERSION:v%=%)" ]]; then \
 	  echo "warning: weaver $$installed installed, but this repo pins $(WEAVER_VERSION:v%=%) (see versions.env)." >&2; \
-	fi
-
-# Fail if opa is not on PATH; warn if it is not the version pinned in versions.env.
-check-opa:
-	@command -v opa >/dev/null 2>&1 || { \
-	  echo "error: opa not found on PATH. Run 'make install-opa' to install the pinned version." >&2; \
-	  exit 1; \
-	}
-	@installed="$$(opa version | awk '/^Version:/ { print $$2 }')"; \
-	if [[ "$$installed" != "$(OPA_VERSION:v%=%)" ]]; then \
-	  echo "warning: opa $$installed installed, but this repo pins $(OPA_VERSION:v%=%) (see versions.env)." >&2; \
 	fi
 
 # Fail if uv is not on PATH. It installs the towncrier version locked in changelog.d/uv.lock.
@@ -195,15 +174,13 @@ help:
 	@echo "generate-docs   regenerate committed markdown under docs/"
 	@echo "generate-all    run every regeneration this repo owns"
 	@echo "package         produce the publication artifacts under .build/package/"
-	@echo "test            run every test suite (templates + policies)"
+	@echo "test            run every test suite (templates)"
 	@echo "test-templates  check the doc templates against the golden fixture output"
-	@echo "test-policies   unit-test the local rego policies"
 	@echo "update-golden   refresh the golden files after an intended template change"
 	@echo "changelog-check    check that this branch adds a changelog fragment"
 	@echo "changelog-preview  print the changelog section the pending fragments render to"
 	@echo "changelog-build    render the pending fragments into CHANGELOG.md (release prep)"
 	@echo "install-weaver  install the weaver version pinned in versions.env"
-	@echo "install-opa     install the OPA version pinned in versions.env"
 	@echo "clean           remove build output"
 
 # awk program for the schema_url/registry_path guard in check-policies: prints one line per
