@@ -33,6 +33,57 @@ The default severity number is INFO (9).
 | `browser.navigation.type` | `enum` | conditionally required (If the type of the navigation can be determined. It is not reported for the initial document load.) | The type of the navigation, as reported by the [Navigation API](https://developer.mozilla.org/docs/Web/API/NavigateEvent/navigationType). |
 | `url.full` | `string` | required | The URL navigated to. |
 
+### `browser.navigation.hash_change`
+
+A navigation that removes the fragment is not reported as a hash change, even though only the fragment changed.
+
+### `browser.navigation.same_document`
+
+Soft navigations performed by a single-page application through the History or Navigation API are same-document navigations; the initial page load is not.
+
+### `url.full`
+
+For network calls, URL usually has `scheme://host[:port][path][?query][#fragment]` format, where the fragment
+is not transmitted over HTTP, but if it is known, it SHOULD be included nevertheless.
+
+`url.full` MUST NOT contain credentials passed via URL in form of `https://username:password@www.example.com/`.
+In such case username and password SHOULD be redacted and attribute's value SHOULD be `https://REDACTED:REDACTED@www.example.com/`.
+
+`url.full` SHOULD capture the absolute URL when it is available (or can be reconstructed).
+
+Sensitive content provided in `url.full` SHOULD be scrubbed when instrumentations can identify it.
+
+![Development](https://img.shields.io/badge/-development-blue)
+Query string values for the following keys SHOULD be redacted by default and replaced by the
+value `REDACTED`:
+
+* [`X-Amz-Signature`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-authentication-methods.html)
+* [`X-Amz-Credential`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-authentication-methods.html)
+* [`X-Amz-Security-Token`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-authentication-methods.html)
+* [`AWSAccessKeyId`](https://docs.aws.amazon.com/AmazonS3/latest/developerguide/RESTAuthentication.html#RESTAuthenticationQueryStringAuth)
+* [`Signature`](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-creating-signed-url-canned-policy.html)
+* [`sig`](https://learn.microsoft.com/azure/storage/common/storage-sas-overview#sas-token)
+* [`X-Goog-Signature`](https://cloud.google.com/storage/docs/access-control/signed-urls)
+
+Several of these keys are used by more than one service or signing scheme. Each link
+points to one representative usage rather than an exhaustive list, and does not narrow
+the scope of the key to the linked service or signing scheme.
+
+This list is subject to change over time.
+
+Matching of query parameter keys against the sensitive list SHOULD be case-sensitive.
+
+![Development](https://img.shields.io/badge/-development-blue)
+Instrumentation MAY provide a way to override this list via declarative configuration.
+If so, it SHOULD use the `sensitive_query_parameters` property
+(an array of case-sensitive strings with minimum items 0) under
+`.instrumentation/development.general.sanitization.url`.
+This list is a full override of the default sensitive query parameter keys,
+it is not a list of keys in addition to the defaults.
+
+When a query string value is redacted, the query string key SHOULD still be preserved, e.g.
+`https://www.example.com/path?color=blue&sig=REDACTED`.
+
 ## `browser.navigation_timing`
 
 **Stability:** development
@@ -70,6 +121,65 @@ This event represents the timing milestones the browser recorded while loading t
 | `browser.resource_timing.transfer_size` | `int` | required | The transfer size of the resource, in bytes, as reported by the browser. |
 | `url.full` | `string` | required | The URL of the document. |
 
+### `browser.navigation_timing.unload_event_end`
+
+Zero if there was no previous document, or if the previous document has a different origin.
+
+### `browser.navigation_timing.unload_event_start`
+
+Zero if there was no previous document, or if the previous document has a different origin.
+
+### `browser.resource_timing.secure_connection_start`
+
+Zero if the resource is not fetched over a secure connection.
+
+### `browser.resource_timing.transfer_size`
+
+The browser uses a fixed 300-byte allowance for response headers, added to the encoded body size. For locally cached responses the transfer size is zero; for revalidated cached responses it is 300 bytes. This value is not an exact count of bytes transferred over the network.
+
+### `url.full`
+
+For network calls, URL usually has `scheme://host[:port][path][?query][#fragment]` format, where the fragment
+is not transmitted over HTTP, but if it is known, it SHOULD be included nevertheless.
+
+`url.full` MUST NOT contain credentials passed via URL in form of `https://username:password@www.example.com/`.
+In such case username and password SHOULD be redacted and attribute's value SHOULD be `https://REDACTED:REDACTED@www.example.com/`.
+
+`url.full` SHOULD capture the absolute URL when it is available (or can be reconstructed).
+
+Sensitive content provided in `url.full` SHOULD be scrubbed when instrumentations can identify it.
+
+![Development](https://img.shields.io/badge/-development-blue)
+Query string values for the following keys SHOULD be redacted by default and replaced by the
+value `REDACTED`:
+
+* [`X-Amz-Signature`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-authentication-methods.html)
+* [`X-Amz-Credential`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-authentication-methods.html)
+* [`X-Amz-Security-Token`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-authentication-methods.html)
+* [`AWSAccessKeyId`](https://docs.aws.amazon.com/AmazonS3/latest/developerguide/RESTAuthentication.html#RESTAuthenticationQueryStringAuth)
+* [`Signature`](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-creating-signed-url-canned-policy.html)
+* [`sig`](https://learn.microsoft.com/azure/storage/common/storage-sas-overview#sas-token)
+* [`X-Goog-Signature`](https://cloud.google.com/storage/docs/access-control/signed-urls)
+
+Several of these keys are used by more than one service or signing scheme. Each link
+points to one representative usage rather than an exhaustive list, and does not narrow
+the scope of the key to the linked service or signing scheme.
+
+This list is subject to change over time.
+
+Matching of query parameter keys against the sensitive list SHOULD be case-sensitive.
+
+![Development](https://img.shields.io/badge/-development-blue)
+Instrumentation MAY provide a way to override this list via declarative configuration.
+If so, it SHOULD use the `sensitive_query_parameters` property
+(an array of case-sensitive strings with minimum items 0) under
+`.instrumentation/development.general.sanitization.url`.
+This list is a full override of the default sensitive query parameter keys,
+it is not a list of keys in addition to the defaults.
+
+When a query string value is redacted, the query string key SHOULD still be preserved, e.g.
+`https://www.example.com/path?color=blue&sig=REDACTED`.
+
 ## `browser.resource_timing`
 
 **Stability:** development
@@ -102,3 +212,70 @@ The event timestamp MUST be set to the start of the resource load, using the ent
 | `browser.resource_timing.transfer_size` | `int` | required | The transfer size of the resource, in bytes, as reported by the browser. |
 | `browser.resource_timing.worker_start` | `double` | required | Time, in milliseconds relative to the time origin of the document, immediately before the request is dispatched to a service worker. |
 | `url.full` | `string` | required | The URL of the resource. |
+
+### `browser.resource_timing.next_hop_protocol`
+
+This attribute preserves the raw ALPN protocol ID reported by the browser. `network.protocol.name` and `network.protocol.version` describe the protocol name and version separately; for example, `h2` corresponds to `http` and `2`, respectively. Empty for cross-origin resources that are not served with a `Timing-Allow-Origin` response header field.
+
+### `browser.resource_timing.redirect_end`
+
+Zero if there was no redirect, or if the timing-allow checks fail.
+
+### `browser.resource_timing.redirect_start`
+
+Zero if there was no redirect, or if the timing-allow checks fail.
+
+### `browser.resource_timing.secure_connection_start`
+
+Zero if the resource is not fetched over a secure connection.
+
+### `browser.resource_timing.transfer_size`
+
+The browser uses a fixed 300-byte allowance for response headers, added to the encoded body size. For locally cached responses the transfer size is zero; for revalidated cached responses it is 300 bytes. This value is not an exact count of bytes transferred over the network.
+
+### `browser.resource_timing.worker_start`
+
+Zero if the request is not intercepted by a service worker.
+
+### `url.full`
+
+For network calls, URL usually has `scheme://host[:port][path][?query][#fragment]` format, where the fragment
+is not transmitted over HTTP, but if it is known, it SHOULD be included nevertheless.
+
+`url.full` MUST NOT contain credentials passed via URL in form of `https://username:password@www.example.com/`.
+In such case username and password SHOULD be redacted and attribute's value SHOULD be `https://REDACTED:REDACTED@www.example.com/`.
+
+`url.full` SHOULD capture the absolute URL when it is available (or can be reconstructed).
+
+Sensitive content provided in `url.full` SHOULD be scrubbed when instrumentations can identify it.
+
+![Development](https://img.shields.io/badge/-development-blue)
+Query string values for the following keys SHOULD be redacted by default and replaced by the
+value `REDACTED`:
+
+* [`X-Amz-Signature`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-authentication-methods.html)
+* [`X-Amz-Credential`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-authentication-methods.html)
+* [`X-Amz-Security-Token`](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-authentication-methods.html)
+* [`AWSAccessKeyId`](https://docs.aws.amazon.com/AmazonS3/latest/developerguide/RESTAuthentication.html#RESTAuthenticationQueryStringAuth)
+* [`Signature`](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-creating-signed-url-canned-policy.html)
+* [`sig`](https://learn.microsoft.com/azure/storage/common/storage-sas-overview#sas-token)
+* [`X-Goog-Signature`](https://cloud.google.com/storage/docs/access-control/signed-urls)
+
+Several of these keys are used by more than one service or signing scheme. Each link
+points to one representative usage rather than an exhaustive list, and does not narrow
+the scope of the key to the linked service or signing scheme.
+
+This list is subject to change over time.
+
+Matching of query parameter keys against the sensitive list SHOULD be case-sensitive.
+
+![Development](https://img.shields.io/badge/-development-blue)
+Instrumentation MAY provide a way to override this list via declarative configuration.
+If so, it SHOULD use the `sensitive_query_parameters` property
+(an array of case-sensitive strings with minimum items 0) under
+`.instrumentation/development.general.sanitization.url`.
+This list is a full override of the default sensitive query parameter keys,
+it is not a list of keys in addition to the defaults.
+
+When a query string value is redacted, the query string key SHOULD still be preserved, e.g.
+`https://www.example.com/path?color=blue&sig=REDACTED`.
