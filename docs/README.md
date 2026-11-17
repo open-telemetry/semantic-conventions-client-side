@@ -8,9 +8,13 @@ in registries it depends on are documented in those respective repos.
 
 ## Attributes
 
-- [`browser`](attributes/browser.md) — 33 attributes
+- [`browser`](attributes/browser.md) — 44 attributes
 - [`enduser`](attributes/enduser.md) — 2 attributes
 
 ## Events
 
-- [`browser`](events/browser.md) — 4 events
+- [`browser`](events/browser.md) — 5 events
+
+## Entities
+
+- [`browser`](entities/browser.md) — 1 entity

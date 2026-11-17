@@ -1,0 +1,10 @@
+file_format: definition/2
+
+entities:
+  - type: browser.document
+    requirement_level: recommended
+    stability: development
+    brief: >
+      The web page document loaded in the browser.
+    identity:
+      - ref: browser.document.url.full

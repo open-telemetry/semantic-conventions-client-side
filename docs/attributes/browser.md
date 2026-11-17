@@ -4,7 +4,11 @@
 
 | Attribute | Type | Stability | Description | Examples |
 |---|---|---|---|---|
+| `browser.brands` | `string[]` | development | Array of brand name and version separated by a space. | `[" Not A;Brand 99", "Chromium 99", "Chrome 99"]` |
 | `browser.console.method` | `enum` | development | The console method that was called. | `error` |
+| `browser.document.url.full` | `string` | development | Absolute URL of the current browser document according to [RFC3986](https://www.rfc-editor.org/rfc/rfc3986). | `https://www.example.com/search?q=OpenTelemetry#SemConv` |
+| `browser.language` | `string` | development | Preferred language of the user using the browser. | `en`, `en-US`, `fr`, `fr-FR` |
+| `browser.mobile` | `boolean` | development | A boolean that is true if the browser is running on a mobile device. |  |
 | `browser.navigation.hash_change` | `boolean` | development | Whether the navigation added or changed the fragment of the URL. | `true`, `false` |
 | `browser.navigation.same_document` | `boolean` | development | Whether the navigation happened within the same document, without a full document load. | `true`, `false` |
 | `browser.navigation.type` | `enum` | development | The type of the navigation, as reported by the [Navigation API](https://developer.mozilla.org/docs/Web/API/NavigateEvent/navigationType). | `push` |
@@ -18,6 +22,7 @@
 | `browser.navigation_timing.type` | `enum` | development | The type of the navigation, as reported by [`PerformanceNavigationTiming.type`](https://developer.mozilla.org/docs/Web/API/PerformanceNavigationTiming/type). | `navigate` |
 | `browser.navigation_timing.unload_event_end` | `double` | development | Time, in milliseconds relative to the start of the navigation, immediately after the `unload` event handlers of the previous document finish running. | `0.0` |
 | `browser.navigation_timing.unload_event_start` | `double` | development | Time, in milliseconds relative to the start of the navigation, immediately before the `unload` event handlers of the previous document start to run. | `0.0` |
+| `browser.platform` | `string` | development | The platform on which the browser is running. | `Windows`, `macOS`, `Android` |
 | `browser.resource_timing.connect_end` | `double` | development | Time, in milliseconds relative to the time origin of the document, immediately after the browser finishes establishing the connection to the server. | `12.8` |
 | `browser.resource_timing.connect_start` | `double` | development | Time, in milliseconds relative to the time origin of the document, immediately before the browser starts to establish the connection to the server. | `3.6` |
 | `browser.resource_timing.decoded_body_size` | `int` | development | The size, in bytes, of the message body after removing any applied content encoding. | `10240` |
@@ -37,6 +42,12 @@
 | `browser.resource_timing.secure_connection_start` | `double` | development | Time, in milliseconds relative to the time origin of the document, immediately before the browser starts the handshake process to secure the connection. | `6.0` |
 | `browser.resource_timing.transfer_size` | `int` | development | The transfer size of the resource, in bytes, as reported by the browser. | `4096` |
 | `browser.resource_timing.worker_start` | `double` | development | Time, in milliseconds relative to the time origin of the document, immediately before the request is dispatched to a service worker. | `0.0`, `12.1` |
+| `browser.web_vital.delta` | `double` | development | The delta between the current value and the last-reported value. See [delta](https://github.com/GoogleChrome/web-vitals?tab=readme-ov-file#report-only-the-delta-of-changes). | `0.2` |
+| `browser.web_vital.id` | `string` | development | A unique ID representing this particular metric instance. | `v3-1677874579383-6381583661209` |
+| `browser.web_vital.name` | `enum` | development | Name of the web vital. | `cls` |
+| `browser.web_vital.navigation_type` | `enum` | development | The type of navigation, as reported by the [Navigation Timing API](https://developer.mozilla.org/docs/Web/API/PerformanceNavigationTiming/type), with additional values reported by the web-vitals library. | `navigate` |
+| `browser.web_vital.rating` | `enum` | development | The rating of the web vital value against the "good", "needs improvement", and "poor" thresholds defined for the metric. | `good` |
+| `browser.web_vital.value` | `double` | development | Value of the web vital. | `1.0` |
 
 
 ## `browser.console.method` values
@@ -81,7 +92,55 @@
 | `blocking` | development | The resource blocked rendering. |
 | `non-blocking` | development | The resource did not block rendering. |
 
+## `browser.web_vital.name` values
+
+`browser.web_vital.name` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Stability | Description |
+|---|---|---|
+| `cls` | development | Cumulative Layout Shift. See [cls](https://web.dev/articles/cls). |
+| `fcp` | development | First Contentful Paint. See [fcp](https://web.dev/articles/fcp). |
+| `fid` | development | First Input Delay. See [fid](https://web.dev/articles/fid). |
+| `inp` | development | Interaction to Next Paint. See [inp](https://web.dev/articles/inp). |
+| `lcp` | development | Largest Contentful Paint. See [lcp](https://web.dev/articles/lcp). |
+| `ttfb` | development | Time to First Byte. See [ttfb](https://web.dev/articles/ttfb). |
+
+## `browser.web_vital.navigation_type` values
+
+`browser.web_vital.navigation_type` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Stability | Description |
+|---|---|---|
+| `back-forward` | development | Navigation through the browser's history traversal (e.g. back/forward buttons). |
+| `back-forward-cache` | development | Navigation restoring a page from the back/forward cache (bfcache). |
+| `navigate` | development | Navigation started by clicking a link, entering a URL, form submission, or a script operation. |
+| `prerender` | development | Navigation to a page that was prerendered. |
+| `reload` | development | Navigation through a reload operation or a `Location.reload()` call. |
+| `restore` | development | Navigation restoring a page that was previously discarded by the browser. |
+
+## `browser.web_vital.rating` values
+
+`browser.web_vital.rating` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Stability | Description |
+|---|---|---|
+| `good` | development | The metric value is within the "good" threshold. |
+| `needs-improvement` | development | The metric value is within the "needs improvement" threshold. |
+| `poor` | development | The metric value is within the "poor" threshold. |
+
 ## Notes
+
+### `browser.brands`
+
+This value is intended to be taken from the [UA client hints API](https://wicg.github.io/ua-client-hints/#interface) (`navigator.userAgentData.brands`).
+
+### `browser.language`
+
+This value is intended to be taken from the Navigator API `navigator.language`.
+
+### `browser.mobile`
+
+This value is intended to be taken from the [UA client hints API](https://wicg.github.io/ua-client-hints/#interface) (`navigator.userAgentData.mobile`). If unavailable, this attribute SHOULD be left unset.
 
 ### `browser.navigation.hash_change`
 
@@ -98,6 +157,21 @@ Zero if there was no previous document, or if the previous document has a differ
 ### `browser.navigation_timing.unload_event_start`
 
 Zero if there was no previous document, or if the previous document has a different origin.
+
+### `browser.platform`
+
+This value is intended to be taken from the
+[UA client hints API](https://wicg.github.io/ua-client-hints/#interface)
+(`navigator.userAgentData.platform`). If unavailable, the legacy
+`navigator.platform` API SHOULD NOT be used instead and this attribute
+SHOULD be left unset in order for the values to be consistent.
+
+The list of possible values is defined in the
+[W3C User-Agent Client Hints specification](https://wicg.github.io/ua-client-hints/#sec-ch-ua-platform).
+Note that some (but not all) of these values can overlap with values
+in the [`os.type` and `os.name` attributes](https://opentelemetry.io/docs/specs/semconv/registry/attributes/os/).
+However, for consistency, the values in the `browser.platform` attribute
+should capture the exact value that the user agent provides.
 
 ### `browser.resource_timing.next_hop_protocol`
 
