@@ -5,6 +5,6 @@ schema_url: https://opentelemetry.io/schemas/client-side-dev/0.1.0-dev
 description: Federated semantic conventions for client-side applications.
 stability: development
 dependencies:
-  # renovate: datasource=github-tags depName=open-telemetry/semantic-conventions versioning=semver-coerced
-  - schema_url: https://opentelemetry.io/schemas/1.45.0
-    registry_path: https://github.com/open-telemetry/semantic-conventions@v1.45.0[model]
+  # Pin the core device deprecation until it is available in a release.
+  - schema_url: https://opentelemetry.io/schemas/1.46.0-unreleased
+    registry_path: https://github.com/open-telemetry/semantic-conventions@69824c64a93b2e55b3491493b7c57cb45e38094e[model]
