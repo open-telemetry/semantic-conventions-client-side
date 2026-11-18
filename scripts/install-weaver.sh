@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Installs the pinned OpenTelemetry Weaver CLI for the host platform.
+# Installs the pinned OpenTelemetry Weaver CLI for the host platform, for local use. CI
+# installs weaver with the upstream open-telemetry/weaver setup-weaver action instead.
 #
-# The version comes from $WEAVER_VERSION when set (the setup-weaver action passes it).
-# Otherwise it is read from versions.env at the root of this repo checkout. Downloads the
-# official release binary, verifies its sha256 checksum, and installs it to ~/.local/bin
-# (or the directory given as the first argument).
+# The version comes from $WEAVER_VERSION when set. Otherwise it is read from versions.env at
+# the root of this repo checkout. Downloads the official release binary, verifies its sha256
+# checksum, and installs it to ~/.local/bin (or the directory given as the first argument).
 #
-# Usage: .github/actions/setup-weaver/install-weaver.sh [install-dir]
+# Usage: scripts/install-weaver.sh [install-dir]
 set -euo pipefail
 
 if [[ -z "${WEAVER_VERSION:-}" ]]; then

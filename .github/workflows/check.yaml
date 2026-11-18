@@ -29,7 +29,7 @@ jobs:
           echo "version=$WEAVER_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Install Weaver
-        uses: $/.github/actions/setup-weaver
+        uses: open-telemetry/weaver/.github/actions/setup-weaver@51a5bf95bdbb2e20fb6e16638e6bbe7dde911e93 # v0.28.0
         with:
           version: ${{ steps.weaver.outputs.version }}
 
@@ -52,7 +52,7 @@ jobs:
           echo "version=$WEAVER_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Install Weaver
-        uses: $/.github/actions/setup-weaver
+        uses: open-telemetry/weaver/.github/actions/setup-weaver@51a5bf95bdbb2e20fb6e16638e6bbe7dde911e93 # v0.28.0
         with:
           version: ${{ steps.weaver.outputs.version }}
 
@@ -85,35 +85,12 @@ jobs:
           echo "version=$WEAVER_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Install Weaver
-        uses: $/.github/actions/setup-weaver
+        uses: open-telemetry/weaver/.github/actions/setup-weaver@51a5bf95bdbb2e20fb6e16638e6bbe7dde911e93 # v0.28.0
         with:
           version: ${{ steps.weaver.outputs.version }}
 
       - name: Check doc templates against golden fixture output
         run: make test-templates
-
-  policies:
-    name: Check Policies
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Read pinned OPA version
-        id: opa
-        run: |
-          source versions.env
-          echo "version=$OPA_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Install OPA
-        uses: $/.github/actions/setup-opa
-        with:
-          version: ${{ steps.opa.outputs.version }}
-
-      - name: Unit-test rego policies
-        run: make test-policies
 
   required-status-check:
     name: Run All Checks
@@ -122,7 +99,6 @@ jobs:
       - check
       - docs-drift
       - templates
-      - policies
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

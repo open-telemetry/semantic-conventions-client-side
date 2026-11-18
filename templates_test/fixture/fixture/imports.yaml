@@ -2,6 +2,6 @@ file_format: definition/2
 
 imports:
   attribute_groups:
-    - "registry.session"
+    - "session-id"
   metrics:
     - "hw.*"

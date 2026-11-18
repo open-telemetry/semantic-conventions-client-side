@@ -116,9 +116,8 @@ jobs:
           source versions.env
           echo "version=$WEAVER_VERSION" >> "$GITHUB_OUTPUT"
 
-      # `$/` is GitHub's syntax for this repository's own actions, at the commit running.
       - name: Install Weaver
-        uses: $/.github/actions/setup-weaver
+        uses: open-telemetry/weaver/.github/actions/setup-weaver@51a5bf95bdbb2e20fb6e16638e6bbe7dde911e93 # v0.28.0
         with:
           version: ${{ steps.weaver.outputs.version }}
 
