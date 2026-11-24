@@ -1,6 +1,65 @@
 file_format: definition/2
 
 attributes:
+  # Browser
+
+  - key: browser.brands
+    type: string[]
+    stability: development
+    brief: Array of brand name and version separated by a space.
+    note: >
+      This value is intended to be taken from the
+      [UA client hints API](https://wicg.github.io/ua-client-hints/#interface)
+      (`navigator.userAgentData.brands`).
+    examples: [[" Not A;Brand 99", "Chromium 99", "Chrome 99"]]
+
+  - key: browser.platform
+    type: string
+    stability: development
+    brief: The platform on which the browser is running.
+    note: |
+      This value is intended to be taken from the
+      [UA client hints API](https://wicg.github.io/ua-client-hints/#interface)
+      (`navigator.userAgentData.platform`). If unavailable, the legacy
+      `navigator.platform` API SHOULD NOT be used instead and this attribute
+      SHOULD be left unset in order for the values to be consistent.
+
+      The list of possible values is defined in the
+      [W3C User-Agent Client Hints specification](https://wicg.github.io/ua-client-hints/#sec-ch-ua-platform).
+      Note that some (but not all) of these values can overlap with values
+      in the [`os.type` and `os.name` attributes](https://opentelemetry.io/docs/specs/semconv/registry/attributes/os/).
+      However, for consistency, the values in the `browser.platform` attribute
+      should capture the exact value that the user agent provides.
+    examples: ["Windows", "macOS", "Android"]
+
+  - key: browser.mobile
+    type: boolean
+    stability: development
+    brief: A boolean that is true if the browser is running on a mobile device.
+    note: >
+      This value is intended to be taken from the
+      [UA client hints API](https://wicg.github.io/ua-client-hints/#interface)
+      (`navigator.userAgentData.mobile`). If unavailable, this attribute
+      SHOULD be left unset.
+
+  - key: browser.language
+    type: string
+    stability: development
+    brief: Preferred language of the user using the browser.
+    note: >
+      This value is intended to be taken from the Navigator API
+      `navigator.language`.
+    examples: ["en", "en-US", "fr", "fr-FR"]
+
+  # Document
+
+  - key: browser.document.url.full
+    type: string
+    stability: development
+    brief: >
+      Absolute URL of the current browser document according to [RFC3986](https://www.rfc-editor.org/rfc/rfc3986).
+    examples: ["https://www.example.com/search?q=OpenTelemetry#SemConv"]
+
   # Console
 
   - key: browser.console.method
@@ -364,3 +423,114 @@ attributes:
       The render-blocking status of the resource, as reported by
       [`PerformanceResourceTiming.renderBlockingStatus`](https://developer.mozilla.org/docs/Web/API/PerformanceResourceTiming/renderBlockingStatus).
     examples: ["blocking"]
+
+  # Web vitals
+
+  - key: browser.web_vital.name
+    type:
+      members:
+        - id: cls
+          value: "cls"
+          stability: development
+          brief: Cumulative Layout Shift. See [cls](https://web.dev/articles/cls).
+        - id: lcp
+          value: "lcp"
+          stability: development
+          brief: Largest Contentful Paint. See [lcp](https://web.dev/articles/lcp).
+        - id: fcp
+          value: "fcp"
+          stability: development
+          brief: First Contentful Paint. See [fcp](https://web.dev/articles/fcp).
+        - id: inp
+          value: "inp"
+          stability: development
+          brief: Interaction to Next Paint. See [inp](https://web.dev/articles/inp).
+        - id: ttfb
+          value: "ttfb"
+          stability: development
+          brief: Time to First Byte. See [ttfb](https://web.dev/articles/ttfb).
+        - id: fid
+          value: "fid"
+          stability: development
+          brief: First Input Delay. See [fid](https://web.dev/articles/fid).
+          deprecated:
+            reason: obsoleted
+            note: Replaced by Interaction to Next Paint (`inp`), which became a Core Web Vital in March 2024. See [inp](https://web.dev/articles/inp).
+    stability: development
+    brief: Name of the web vital.
+    examples: ["cls"]
+
+  - key: browser.web_vital.value
+    type: double
+    stability: development
+    brief: Value of the web vital.
+    examples: [1.0]
+
+  - key: browser.web_vital.delta
+    type: double
+    stability: development
+    brief: >
+      The delta between the current value and the last-reported value. See
+      [delta](https://github.com/GoogleChrome/web-vitals?tab=readme-ov-file#report-only-the-delta-of-changes).
+    examples: [0.2]
+
+  - key: browser.web_vital.id
+    type: string
+    stability: development
+    brief: A unique ID representing this particular metric instance.
+    examples: ["v3-1677874579383-6381583661209"]
+
+  - key: browser.web_vital.rating
+    type:
+      members:
+        - id: good
+          value: "good"
+          stability: development
+          brief: The metric value is within the "good" threshold.
+        - id: needs_improvement
+          value: "needs-improvement"
+          stability: development
+          brief: The metric value is within the "needs improvement" threshold.
+        - id: poor
+          value: "poor"
+          stability: development
+          brief: The metric value is within the "poor" threshold.
+    stability: development
+    brief: >
+      The rating of the web vital value against the "good", "needs improvement",
+      and "poor" thresholds defined for the metric.
+    examples: ["good"]
+
+  - key: browser.web_vital.navigation_type
+    type:
+      members:
+        - id: navigate
+          value: "navigate"
+          stability: development
+          brief: Navigation started by clicking a link, entering a URL, form submission, or a script operation.
+        - id: reload
+          value: "reload"
+          stability: development
+          brief: Navigation through a reload operation or a `Location.reload()` call.
+        - id: back_forward
+          value: "back-forward"
+          stability: development
+          brief: Navigation through the browser's history traversal (e.g. back/forward buttons).
+        - id: back_forward_cache
+          value: "back-forward-cache"
+          stability: development
+          brief: Navigation restoring a page from the back/forward cache (bfcache).
+        - id: prerender
+          value: "prerender"
+          stability: development
+          brief: Navigation to a page that was prerendered.
+        - id: restore
+          value: "restore"
+          stability: development
+          brief: Navigation restoring a page that was previously discarded by the browser.
+    stability: development
+    brief: >
+      The type of navigation, as reported by the
+      [Navigation Timing API](https://developer.mozilla.org/docs/Web/API/PerformanceNavigationTiming/type),
+      with additional values reported by the web-vitals library.
+    examples: ["navigate"]

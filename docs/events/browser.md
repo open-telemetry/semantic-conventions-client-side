@@ -102,3 +102,20 @@ The event timestamp MUST be set to the start of the resource load, using the ent
 | `browser.resource_timing.transfer_size` | `int` | required | The transfer size of the resource, in bytes, as reported by the browser. |
 | `browser.resource_timing.worker_start` | `double` | required | Time, in milliseconds relative to the time origin of the document, immediately before the request is dispatched to a service worker. |
 | `url.full` | `string` | required | The URL of the resource. |
+
+## `browser.web_vital`
+
+**Stability:** development
+
+**Requirement level:** recommended
+
+This event describes the website performance metrics introduced by Google, See [web vitals](https://web.dev/vitals).
+
+| Attribute | Type | Requirement level | Description |
+|---|---|---|---|
+| `browser.web_vital.delta` | `double` | required | The delta between the current value and the last-reported value. See [delta](https://github.com/GoogleChrome/web-vitals?tab=readme-ov-file#report-only-the-delta-of-changes). |
+| `browser.web_vital.id` | `string` | required | A unique ID representing this particular metric instance. |
+| `browser.web_vital.name` | `enum` | required | Name of the web vital. |
+| `browser.web_vital.navigation_type` | `enum` | recommended | The type of navigation, as reported by the [Navigation Timing API](https://developer.mozilla.org/docs/Web/API/PerformanceNavigationTiming/type), with additional values reported by the web-vitals library. |
+| `browser.web_vital.rating` | `enum` | recommended | The rating of the web vital value against the "good", "needs improvement", and "poor" thresholds defined for the metric. |
+| `browser.web_vital.value` | `double` | required | Value of the web vital. |
