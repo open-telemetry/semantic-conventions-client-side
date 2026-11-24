@@ -6,11 +6,23 @@ Reference documentation generated from the semantic convention definitions under
 `model/`. Only conventions defined by this registry are listed. Attributes defined
 in registries it depends on are documented in those respective repos.
 
+## Attribute groups
+
+- [Attribute groups](attribute-groups.md) — 1 group
+
 ## Attributes
 
+- [`app`](attributes/app.md) — 12 attributes
 - [`browser`](attributes/browser.md) — 33 attributes
 - [`enduser`](attributes/enduser.md) — 2 attributes
+- [`session`](attributes/session.md) — 2 attributes
 
 ## Events
 
+- [`app`](events/app.md) — 4 events
 - [`browser`](events/browser.md) — 4 events
+- [`session`](events/session.md) — 2 events
+
+## Entities
+
+- [`app`](entities/app.md) — 1 entity

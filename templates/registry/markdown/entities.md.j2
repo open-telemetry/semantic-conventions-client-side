@@ -19,5 +19,14 @@ Identifying attributes:
 {%- for attribute in entity.identity | sort(attribute="key") %}
 | `{{ attribute.key }}` | `{% if attribute.type is string %}{{ attribute.type }}{% else %}enum{% endif %}` | {{ attribute.brief | trim | replace("\n", " ") }} |
 {%- endfor %}
+{%- endif %}
+{% if entity.description | default([]) | length > 0 %}
+Descriptive attributes:
+
+| Attribute | Type | Description |
+|---|---|---|
+{%- for attribute in entity.description | sort(attribute="key") %}
+| `{{ attribute.key }}` | `{% if attribute.type is string %}{{ attribute.type }}{% else %}enum{% endif %}` | {{ attribute.brief | trim | replace("\n", " ") }} |
+{%- endfor %}
 {% endif %}
 {%- endfor %}
